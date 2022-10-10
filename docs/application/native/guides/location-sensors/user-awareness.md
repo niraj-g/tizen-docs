@@ -45,6 +45,30 @@ The main features of the user awareness include:
 ## Starting the absence detection
 
 To start the absence detection:
+1. Create a user monitor handle using the ```ua_monitor_create()``` API before you use the user awareness features.
+
+  ```
+  ua_monitor_h g_ua_mon_h;
+  ua_monitor_create(&g_ua_mon_h);
+  ```
+  The user awareness framework add available sensors in the monitor handle and loads sensor plugins.
+  > The user awareness framework is not thread-safe and depends on the main loop. Implement the detection logics within the main loop, and do not use it in a thread.
+  
+   2. Starts the user presence detection using the ```ua_monitor_start_absence_detection()``` API. This call is asynchronous and only initiates the process of starting the user absence detection. Once the absence detection is started, the registered callbacks are invoked when their corresponding events take place. To know when the user absence is detected, use the ```ua_absence_detected_cb()``` function.
+  ```
+  ua_monitor_start_absence_detection(g_ua_mon_h, NULL, detection_mode, __absence_detected_cb, NULL);
+  ```
+  The ```__absence_detected_cb()``` function is a callback, which is called when the user absence is detected.
+  
+   3. Using the user absence detection consumes the system resources, so if the service is not used, stop the user absence detection using the ```ua_monitor_stop_absence_detection()``` API. Call the ```ua_monitor_start_absence_detection()``` API again if user presence detection is needed.
+  ```
+  ua_monitor_stop_absence_detection(g_ua_mon_h);
+  ```
+  4. At the end of application, destroy all used resources, such as the user monitor handle using the ```ua_monitor_destroy()``` API.
+  ```
+  ua_monitor_destroy(g_ua_mon_h);
+  ```
+
 ## Starting the location detection
 
 To start the location detection:
